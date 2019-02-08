@@ -337,7 +337,7 @@ namespace eastl
 		// The view of memory when the string data is able to store the string data locally (without a heap allocation).
 		struct SSOLayout
 		{
-			enum : size_type { SSO_CAPACITY = (sizeof(HeapLayout) - sizeof(char)) / sizeof(value_type) };
+			static constexpr size_type SSO_CAPACITY = (sizeof(HeapLayout) - sizeof(char)) / sizeof(value_type);
 
 			// mnSize must correspond to the last byte of HeapLayout.mnCapacity, so we don't want the compiler to insert
 			// padding after mnSize if sizeof(value_type) != 1; Also ensures both layouts are the same size.
@@ -1322,11 +1322,7 @@ namespace eastl
 			erase(internalLayout().BeginPtr() + n, internalLayout().EndPtr());
 		else if(n > s)
 		{
-			#if EASTL_STRING_OPT_CHAR_INIT
-				append(n - s, value_type());
-			#else
-				append(n - s);
-			#endif
+			append(n - s, value_type());
 		}
 	}
 
@@ -3650,7 +3646,7 @@ namespace eastl
 	basic_string<T, Allocator> operator+(const typename basic_string<T, Allocator>::value_type* p, basic_string<T, Allocator>&& b)
 	{
 		b.insert(0, p);
-		return b;
+		return eastl::move(b);
 	}
 
 	template <typename T, typename Allocator>
